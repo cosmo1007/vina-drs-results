@@ -257,6 +257,40 @@
   }
   ul.findings li:last-child { border-bottom: none; }
 
+  /* EXPLORE LINK */
+  .explore-link {
+    display: block;
+    margin: 1.6rem 0 0.4rem;
+    padding: 1.1rem 1.3rem;
+    background: var(--forest);
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+  .explore-link:hover { background: var(--sage-dark); color: #fff; }
+  .explore-link .lbl {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--cream-warm);
+    margin-bottom: 0.25rem;
+    display: block;
+  }
+  .explore-link .ttl {
+    font-family: Georgia, serif;
+    font-size: 1.2rem;
+    color: #fff;
+  }
+  .explore-link .ttl::after { content: " →"; opacity: 0.85; }
+  .explore-link .sub {
+    display: block;
+    margin-top: 0.25rem;
+    color: rgba(255,255,255,0.85);
+    font-size: 0.93rem;
+  }
+
   /* SMALL-FARM CALLOUT */
   .callout {
     background: var(--cream-warm);
@@ -511,6 +545,12 @@
         </tr>
       </tbody>
     </table>
+
+    <a class="explore-link" href="explorer/">
+      <span class="lbl">Interactive</span>
+      <span class="ttl">Explore costs and savings for all scenarios</span>
+      <span class="sub">Compare per-acre incentives vs. water savings on a trade-off chart, and run a subbasin-scale program scenario with your own acreage and enrollment assumptions.</span>
+    </a>
 
     <h3>Precision Irrigation — five things the pilot revealed</h3>
     <ul class="findings">

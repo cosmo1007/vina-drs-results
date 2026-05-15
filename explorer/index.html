@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vina DRS Results Explorer — Scenarios &amp; Costs</title>
+<meta name="description" content="Interactive scenario explorer for the Vina Subbasin Extend Orchard Replacement (EOR) pilot study. Compare per-acre water savings and incentive costs across seven land-management options, and model program-scale outcomes.">
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --forest: #2d3e2d;
+    --forest-soft: #4a5c4a;
+    --sage: #688e6c;
+    --sage-dark: #4f7053;
+    --terracotta: #b04444;
+    --terracotta-dark: #8c2a2a;
+    --cream: #faf8f4;
+    --cream-warm: #f1ece1;
+    --rule: #d8d3c4;
+    --max: 1080px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink);
+    background: var(--cream);
+  }
+  h1, h2, h3, .serif {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-weight: 500;
+    color: var(--forest);
+    letter-spacing: -0.005em;
+  }
+  h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); line-height: 1.15; margin: 0 0 0.35em; }
+  h2 { font-size: clamp(1.3rem, 2.6vw, 1.7rem); line-height: 1.25; margin: 0 0 0.6em; }
+  h3 { font-size: 1.05rem; margin: 1.4em 0 0.35em; color: var(--forest-soft); text-transform: uppercase; letter-spacing: 0.08em; }
+  p { margin: 0 0 1em; }
+  a { color: var(--sage-dark); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { color: var(--terracotta); }
+
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 1.25rem; }
+  section { padding: 3rem 0; border-top: 1px solid var(--rule); }
+  section:first-of-type { border-top: none; }
+
+  /* HEADER */
+  .topbar {
+    background: var(--forest);
+    color: #fff;
+    padding: 1rem 0;
+    font-size: 0.92rem;
+  }
+  .topbar a { color: var(--cream-warm); text-decoration: none; }
+  .topbar a:hover { color: #fff; text-decoration: underline; }
+  .topbar .wrap { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+
+  .hero {
+    background: var(--cream-warm);
+    padding: 3rem 0 2.5rem;
+  }
+  .hero .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--terracotta);
+    margin-bottom: 0.6em;
+  }
+  .hero .lede {
+    font-size: 1.1rem;
+    max-width: 42em;
+    color: var(--forest-soft);
+  }
+
+  /* CHART FRAME */
+  .chart-frame {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1.2rem 1rem 0.6rem;
+    margin: 1.4rem 0 0.5rem;
+  }
+  #scatterChart { width: 100%; height: 520px; }
+  .chart-caption {
+    font-size: 0.92rem;
+    color: var(--forest-soft);
+    margin: 0.5rem 0 0;
+  }
+
+  /* HOW-TO-READ */
+  details.howto {
+    background: var(--cream-warm);
+    border-left: 3px solid var(--sage);
+    padding: 0.85rem 1.1rem;
+    border-radius: 0 4px 4px 0;
+    margin-top: 1rem;
+  }
+  details.howto summary {
+    cursor: pointer;
+    color: var(--forest);
+    font-weight: 600;
+    font-size: 0.96rem;
+  }
+  details.howto[open] summary { margin-bottom: 0.5rem; }
+  details.howto p { font-size: 0.94rem; margin: 0.3rem 0; }
+
+  /* CALCULATOR */
+  .calc {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 2rem;
+    margin-top: 1.4rem;
+  }
+  .calc-inputs {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1.4rem 1.5rem;
+  }
+  .field { margin-bottom: 1.1rem; }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: block;
+    font-weight: 600;
+    color: var(--forest);
+    margin-bottom: 0.35rem;
+    font-size: 0.93rem;
+  }
+  .field .help {
+    color: var(--forest-soft);
+    font-size: 0.83rem;
+    margin: 0.2rem 0 0.5rem;
+    font-weight: 400;
+  }
+  .field select, .field input[type="number"] {
+    width: 100%;
+    padding: 0.55rem 0.7rem;
+    font-size: 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: #fff;
+    color: var(--ink);
+    font-family: inherit;
+  }
+  .field select:focus, .field input:focus {
+    outline: 2px solid var(--sage);
+    outline-offset: 1px;
+  }
+  .slider-row { display: flex; align-items: center; gap: 0.8rem; }
+  .slider-row input[type="range"] { flex: 1; accent-color: var(--sage-dark); }
+  .slider-row .val {
+    min-width: 4.5rem;
+    text-align: right;
+    font-family: Georgia, serif;
+    font-size: 1.05rem;
+    color: var(--forest);
+  }
+
+  /* OUTPUTS */
+  .calc-outputs {
+    background: var(--forest);
+    color: #fff;
+    border-radius: 6px;
+    padding: 1.5rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .out {
+    border-bottom: 1px solid rgba(255,255,255,0.16);
+    padding-bottom: 0.85rem;
+  }
+  .out:last-child { border-bottom: none; padding-bottom: 0; }
+  .out .lbl {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.72rem;
+    color: var(--cream-warm);
+    opacity: 0.85;
+    margin-bottom: 0.3rem;
+  }
+  .out .big {
+    font-family: Georgia, serif;
+    font-size: clamp(1.7rem, 3vw, 2.2rem);
+    line-height: 1.1;
+    color: #fff;
+  }
+  .out .sub { font-size: 0.88rem; color: rgba(255,255,255,0.85); margin-top: 0.15rem; }
+  .out.headline .big { color: #fff; }
+  .out.goal {
+    background: rgba(176,68,68,0.22);
+    border: 1px solid rgba(255,220,200,0.3);
+    border-bottom: none;
+    border-radius: 4px;
+    padding: 0.85rem 1rem;
+    margin-top: 0.3rem;
+  }
+  .out.goal .lbl { color: #fff; opacity: 1; }
+  .out.goal .big { font-size: 1.5rem; }
+
+  /* NOTES */
+  .notes {
+    background: var(--cream-warm);
+    border-left: 3px solid var(--terracotta);
+    padding: 0.9rem 1.2rem;
+    border-radius: 0 4px 4px 0;
+    margin-top: 2rem;
+    font-size: 0.94rem;
+  }
+  .notes strong { color: var(--forest); }
+
+  /* SOURCES */
+  .sources {
+    margin-top: 1.5rem;
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1.2rem 1.4rem;
+    font-size: 0.92rem;
+  }
+  .sources ul { margin: 0.5rem 0 0; padding-left: 1.1rem; }
+  .sources li { margin-bottom: 0.4rem; color: var(--forest-soft); }
+
+  footer {
+    padding: 2rem 0 3rem;
+    font-size: 0.85rem;
+    color: var(--forest-soft);
+    text-align: center;
+    border-top: 1px solid var(--rule);
+  }
+
+  @media (max-width: 760px) {
+    .calc { grid-template-columns: 1fr; gap: 1.2rem; }
+    section { padding: 2.25rem 0; }
+    #scatterChart { height: 460px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span>Vina Subbasin Demand Reduction Strategies · Results Explorer</span>
+    <a href="../">← Back to results summary</a>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Scenarios &amp; Costs</div>
+    <h1>Explore the EOR economic analysis</h1>
+    <p class="lede">Compare per-acre water savings and incentive costs across seven land-management options for the extended replant period, and model what subbasin-scale outcomes would look like under a hypothetical EOR program. All values come directly from the ERA Economics analysis (April 2026).</p>
+  </div>
+</header>
+
+<!-- SCATTER -->
+<section id="scatter">
+  <div class="wrap">
+    <h2>Trade-off: per-acre cost vs. per-acre water savings</h2>
+    <p>Each point shows one practice for one crop. The vertical axis is the water saved on each acre of extended replant (in acre-feet per acre). The horizontal axis is the per-acre incentive payment that ERA Economics estimated would compensate a grower for one year of delayed replanting under that practice. <strong>Upper-left is the sweet spot</strong> — high water savings at low per-acre cost.</p>
+
+    <div class="chart-frame">
+      <div id="scatterChart" role="img" aria-label="Scatter plot: per-acre EOR incentive payment vs. per-acre ET savings, by scenario and crop"></div>
+      <p class="chart-caption">Source: ERA Economics, <em>Vina Subbasin Economic Analysis for Extended Orchard Replacement Program</em> (April 2026), Tables 2, 3, 6, 7. Values shown are for a 1-year delay in replanting. Walnut scenarios assume walnuts are removed and almonds are replanted, reflecting current walnut market conditions.</p>
+    </div>
+
+    <details class="howto">
+      <summary>How to read this chart</summary>
+      <p><strong>Up and to the left = better.</strong> A point near the top of the chart saves more water per acre. A point on the left side costs less per acre to incentivize.</p>
+      <p><strong>Winter wheat for grain</strong> stands out as low-cost / high-savings — harvest revenue offsets much of the grower's opportunity cost. <strong>Processing tomatoes</strong> sit at the far left because cash crop revenue substantially reduces the required incentive, but they also save the least water. <strong>Cover crops and idle ground</strong> cluster in the upper-right: highest savings, highest cost.</p>
+      <p>The per-acre numbers shown here are the <em>minimum</em> incentive (the grower's willingness-to-accept). A real EOR program would likely need to pay a premium above this floor to drive substantial enrollment.</p>
+    </details>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section id="calculator">
+  <div class="wrap">
+    <h2>Run a subbasin-scale scenario</h2>
+    <p>Apply per-acre figures to a hypothetical EOR program. Set the annual orchard removal acreage, an enrollment rate, and a primary practice. The results show what that year's program would cost and how much groundwater it would save.</p>
+
+    <div class="calc">
+      <div class="calc-inputs">
+        <div class="field">
+          <label for="crop">Crop being removed</label>
+          <div class="help">Walnut analysis assumes replanting to almonds, reflecting current market conditions.</div>
+          <select id="crop">
+            <option value="almond" selected>Almonds (replant to almonds)</option>
+            <option value="walnut">Walnuts (replant to almonds)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="practice">Practice during extended replant</label>
+          <div class="help">What the ground is held in during the extra year between orchards.</div>
+          <select id="practice">
+            <option value="idle">Idle (bare ground)</option>
+            <option value="winter_mix" selected>Winter mix cover crop</option>
+            <option value="winter_hay">Winter forage cover crop (for hay)</option>
+            <option value="winter_grain">Winter wheat for grain</option>
+            <option value="spring_grass">Spring sudan grass</option>
+            <option value="tomatoes">Cash crop: processing tomatoes</option>
+            <option value="dry_beans">Cash crop: dry beans</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="acres">Acres removed in the year</label>
+          <div class="help">2023–2025 actuals ranged from 36 ac (walnuts, 2024) to 2,826 ac (almonds, 2023).</div>
+          <div class="slider-row">
+            <input id="acres" type="range" min="0" max="3000" step="50" value="1000">
+            <span class="val" id="acresVal">1,000 ac</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="enroll">Enrollment rate</label>
+          <div class="help">Share of removed acres voluntarily enrolling in EOR.</div>
+          <div class="slider-row">
+            <input id="enroll" type="range" min="0" max="100" step="5" value="50">
+            <span class="val" id="enrollVal">50%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-outputs">
+        <div class="out headline">
+          <div class="lbl">Annual water savings</div>
+          <div class="big" id="outAF">— AF/yr</div>
+          <div class="sub" id="outAFsub">water consumed-use reduction at full participation</div>
+        </div>
+        <div class="out headline">
+          <div class="lbl">Annual incentive cost</div>
+          <div class="big" id="outCost">$—</div>
+          <div class="sub" id="outCostSub">minimum payment to compensate growers (1-year delay)</div>
+        </div>
+        <div class="out">
+          <div class="lbl">Unit cost</div>
+          <div class="big" id="outUnit">$— per acre-foot saved</div>
+        </div>
+        <div class="out">
+          <div class="lbl">Enrolled acres</div>
+          <div class="big" id="outAcres">— ac</div>
+        </div>
+        <div class="out goal">
+          <div class="lbl">Toward the 10,000 AF/yr deficit</div>
+          <div class="big" id="outPct">—%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes">
+      <strong>How to interpret.</strong> These are minimum willingness-to-accept incentives — a working EOR program would likely add a premium to drive enrollment. Numbers shown are for a single 1-year delay; a 2- or 3-year delay multiplies savings and costs roughly linearly. Outcomes for cash crop scenarios (tomatoes, dry beans) are highly sensitive to commodity prices, contract terms, and irrigation requirements; the values shown reflect ERA Economics' baseline assumptions and should be updated annually.
+    </div>
+
+    <div class="sources">
+      <strong>Sources for the per-acre figures</strong>
+      <ul>
+        <li>ERA Economics, <em>Vina Subbasin Economic Analysis for Extended Orchard Replacement Program</em>, April 2026 — Table 2 (almond incentive payments), Table 3 (walnut-to-almond incentive payments), Table 6 (almond ET savings), Table 7 (walnut ET savings).</li>
+        <li>Land IQ, <em>Vina Subbasin GSAs Demand Reduction Strategies: Extend Orchard Replacement Pilot Study Final Report</em>, March 2026 — Table 3 (water savings and economic cost by year of removal).</li>
+        <li>Subbasin overdraft estimate of 10,000 acre-feet per year is from the Vina Subbasin Groundwater Sustainability Plan (DWR-approved July 2023).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Prepared for the Vina and Rock Creek Reclamation District Groundwater Sustainability Agencies · Pilot studies by Land IQ &amp; ERA Economics, March–April 2026 · Funded by the California Department of Water Resources Sustainable Management Grant Program · <a href="../">Back to results summary</a>
+  </div>
+</footer>
+
+<script>
+  // Per-scenario data from ERA Economics (April 2026), 1-year delay scenarios.
+  // af = ET water savings in acre-feet per acre per year (ERA Tables 6 & 7)
+  // cost = annual incentive payment per acre (ERA Tables 2 & 3)
+  const SCENARIOS = {
+    idle:         { name: "Idle (bare ground)",                almond: { af: 2.62, cost: 639 }, walnut: { af: 2.20, cost: 633 } },
+    winter_mix:   { name: "Winter mix cover crop",             almond: { af: 2.29, cost: 790 }, walnut: { af: 1.88, cost: 783 } },
+    winter_hay:   { name: "Winter forage cover crop (for hay)", almond: { af: 2.29, cost: 658 }, walnut: { af: 1.88, cost: 653 } },
+    winter_grain: { name: "Winter wheat for grain",            almond: { af: 2.29, cost: 531 }, walnut: { af: 1.88, cost: 526 } },
+    spring_grass: { name: "Spring sudan grass",                almond: { af: 2.02, cost: 758 }, walnut: { af: 1.60, cost: 753 } },
+    tomatoes:     { name: "Cash crop: processing tomatoes",    almond: { af: 0.91, cost: 107 }, walnut: { af: 0.49, cost: 102 } },
+    dry_beans:    { name: "Cash crop: dry beans",              almond: { af: 1.37, cost: 600 }, walnut: { af: 0.95, cost: 595 } }
+  };
+
+  const DEFICIT_AFY = 10000;
+
+  // ---------- SCATTER CHART ----------
+  function renderScatter() {
+    const keys = Object.keys(SCENARIOS);
+
+    function trace(crop, color, symbol) {
+      return {
+        x: keys.map(k => SCENARIOS[k][crop].cost),
+        y: keys.map(k => SCENARIOS[k][crop].af),
+        text: keys.map(k => SCENARIOS[k].name),
+        customdata: keys.map(k => {
+          const d = SCENARIOS[k][crop];
+          return [d.cost, d.af, (d.cost / d.af).toFixed(0)];
+        }),
+        mode: "markers+text",
+        name: crop === "almond" ? "Almonds" : "Walnuts → Almonds",
+        textposition: "top center",
+        textfont: { size: 10, color: "#4a5c4a" },
+        marker: {
+          size: 16,
+          color: color,
+          symbol: symbol,
+          line: { color: "#fff", width: 1.5 }
+        },
+        hovertemplate:
+          "<b>%{text}</b><br>" +
+          (crop === "almond" ? "Almonds" : "Walnuts → Almonds") + "<br>" +
+          "Incentive: $%{customdata[0]:,}/ac/yr<br>" +
+          "ET savings: %{customdata[1]} AF/ac/yr<br>" +
+          "Unit cost: $%{customdata[2]}/AF" +
+          "<extra></extra>"
+      };
+    }
+
+    const traces = [
+      trace("almond", "#688e6c", "circle"),
+      trace("walnut", "#b04444", "triangle-up")
+    ];
+
+    // Hide text labels on the walnut trace to avoid overlap; almonds carry the labels.
+    traces[1].mode = "markers";
+
+    const layout = {
+      margin: { l: 60, r: 24, t: 24, b: 60 },
+      font: { family: "-apple-system, Segoe UI, Roboto, sans-serif", size: 13, color: "#2d3e2d" },
+      paper_bgcolor: "#ffffff",
+      plot_bgcolor: "#ffffff",
+      xaxis: {
+        title: { text: "Annual incentive payment, $/ac/yr (1-year delay)", standoff: 14 },
+        gridcolor: "#eee5d4",
+        zeroline: false,
+        rangemode: "tozero",
+        fixedrange: true
+      },
+      yaxis: {
+        title: { text: "ET water savings, acre-feet per acre per year", standoff: 12 },
+        gridcolor: "#eee5d4",
+        zeroline: false,
+        rangemode: "tozero",
+        fixedrange: true
+      },
+      legend: { orientation: "h", x: 0, y: 1.08, xanchor: "left" },
+      shapes: [
+        // Sweet-spot quadrant highlight (upper-left)
+        {
+          type: "rect", xref: "paper", yref: "paper",
+          x0: 0, x1: 0.5, y0: 0.5, y1: 1,
+          fillcolor: "rgba(104,142,108,0.06)",
+          line: { width: 0 }
+        }
+      ],
+      annotations: [
+        {
+          xref: "paper", yref: "paper", x: 0.02, y: 0.97,
+          text: "↖ Sweet spot — high savings, low cost",
+          showarrow: false,
+          font: { size: 11, color: "#4f7053" },
+          align: "left"
+        }
+      ]
+    };
+
+    Plotly.newPlot("scatterChart", traces, layout, { displayModeBar: false, responsive: true });
+  }
+
+  // ---------- CALCULATOR ----------
+  const els = {
+    crop: document.getElementById("crop"),
+    practice: document.getElementById("practice"),
+    acres: document.getElementById("acres"),
+    acresVal: document.getElementById("acresVal"),
+    enroll: document.getElementById("enroll"),
+    enrollVal: document.getElementById("enrollVal"),
+    outAF: document.getElementById("outAF"),
+    outCost: document.getElementById("outCost"),
+    outUnit: document.getElementById("outUnit"),
+    outAcres: document.getElementById("outAcres"),
+    outPct: document.getElementById("outPct")
+  };
+
+  const fmtNum = n => n.toLocaleString("en-US", { maximumFractionDigits: 0 });
+  const fmtMoney = n => "$" + Math.round(n).toLocaleString("en-US");
+
+  function recalc() {
+    const crop = els.crop.value;
+    const practice = els.practice.value;
+    const acres = parseInt(els.acres.value, 10);
+    const pct = parseInt(els.enroll.value, 10);
+    const enrolled = Math.round(acres * pct / 100);
+    const s = SCENARIOS[practice][crop];
+
+    const afSaved = enrolled * s.af;
+    const cost = enrolled * s.cost;
+    const unit = afSaved > 0 ? cost / afSaved : 0;
+    const pctOfGoal = (afSaved / DEFICIT_AFY) * 100;
+
+    els.acresVal.textContent = fmtNum(acres) + " ac";
+    els.enrollVal.textContent = pct + "%";
+    els.outAF.textContent = fmtNum(afSaved) + " AF/yr";
+    els.outCost.textContent = fmtMoney(cost) + " / yr";
+    els.outUnit.textContent = fmtMoney(unit) + " per acre-foot saved";
+    els.outAcres.textContent = fmtNum(enrolled) + " ac enrolled";
+    els.outPct.textContent = pctOfGoal.toFixed(1) + "% of the 10,000 AF/yr goal";
+  }
+
+  // ---------- INIT ----------
+  document.addEventListener("DOMContentLoaded", function () {
+    ["crop", "practice", "acres", "enroll"].forEach(id => {
+      document.getElementById(id).addEventListener("input", recalc);
+    });
+    recalc();
+
+    if (typeof Plotly === "undefined") {
+      const t = setInterval(function () {
+        if (typeof Plotly !== "undefined") { clearInterval(t); renderScatter(); }
+      }, 60);
+    } else {
+      renderScatter();
+    }
+  });
+</script>
+</body>
+</html>
