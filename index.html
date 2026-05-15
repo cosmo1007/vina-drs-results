@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vina Subbasin Demand Reduction Strategies — Results at a Glance</title>
+<meta name="description" content="Interactive summary of the Vina Subbasin Groundwater Sustainability Agencies' 2024–26 Extend Orchard Replacement and Precision Irrigation pilot studies.">
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --forest: #2d3e2d;
+    --forest-soft: #4a5c4a;
+    --sage: #688e6c;
+    --sage-dark: #4f7053;
+    --terracotta: #b04444;
+    --cream: #faf8f4;
+    --cream-warm: #f1ece1;
+    --rule: #d8d3c4;
+    --max: 1080px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink);
+    background: var(--cream);
+  }
+
+  h1, h2, h3, .serif {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-weight: 500;
+    color: var(--forest);
+    letter-spacing: -0.005em;
+  }
+  h1 { font-size: clamp(2rem, 5vw, 3.25rem); line-height: 1.12; margin: 0 0 0.4em; }
+  h2 { font-size: clamp(1.4rem, 3vw, 1.9rem); line-height: 1.2; margin: 0 0 0.6em; }
+  h3 { font-size: 1.15rem; margin: 1.6em 0 0.4em; color: var(--forest-soft); }
+  p { margin: 0 0 1em; }
+  a { color: var(--sage-dark); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { color: var(--terracotta); }
+
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 1.25rem; }
+  section { padding: 3.5rem 0; border-top: 1px solid var(--rule); }
+  section:first-of-type { border-top: none; }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    background-color: var(--forest);
+    background-image:
+      linear-gradient(180deg, rgba(20,30,20,0.86) 0%, rgba(35,50,35,0.82) 55%, rgba(35,50,35,0.88) 100%),
+      url("almonds.JPG");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: #fff;
+    padding: 5rem 0 4.5rem;
+  }
+  .hero h1 {
+    color: #fff;
+    font-weight: 600;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.35);
+  }
+  .hero .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 1em;
+    padding: 0.35em 0.85em;
+    background: rgba(176,68,68,0.85);
+    border-radius: 3px;
+    display: inline-block;
+  }
+  .hero .lede {
+    font-size: 1.28rem;
+    line-height: 1.5;
+    max-width: 40em;
+    color: #fff;
+    font-weight: 400;
+    text-shadow: 0 1px 12px rgba(0,0,0,0.35);
+  }
+  .hero a { color: var(--cream-warm); }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2.25rem;
+  }
+  .tile {
+    background: rgba(0,0,0,0.42);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 6px;
+    padding: 1.2rem 1.25rem 1.35rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .tile-tag {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #fff;
+    opacity: 0.92;
+    margin-bottom: 0.65rem;
+  }
+  .tile .num {
+    font-family: Georgia, serif;
+    font-size: clamp(1.85rem, 3.2vw, 2.5rem);
+    line-height: 1;
+    color: #fff;
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+  }
+  .tile .label {
+    color: rgba(255,255,255,0.94);
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+  .tile.goal {
+    background: rgba(140,42,42,0.62);
+    border-color: rgba(255,220,200,0.4);
+  }
+  .tile.goal .tile-tag {
+    color: #fff;
+    opacity: 1;
+    background: rgba(255,255,255,0.14);
+    padding: 0.25em 0.6em;
+    border-radius: 3px;
+    align-self: flex-start;
+  }
+
+  /* STAKES */
+  .stakes-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 2.5rem;
+    align-items: start;
+  }
+  .stat-rail {
+    background: var(--cream-warm);
+    border-radius: 6px;
+    padding: 1.4rem 1.5rem;
+  }
+  .stat-rail dl { margin: 0; }
+  .stat-rail dt {
+    font-family: Georgia, serif;
+    font-size: 1.8rem;
+    color: var(--forest);
+    line-height: 1;
+  }
+  .stat-rail dd {
+    margin: 0.15rem 0 1rem;
+    font-size: 0.95rem;
+    color: var(--forest-soft);
+  }
+  .stat-rail dd:last-child { margin-bottom: 0; }
+
+  /* TWO PILOTS */
+  .pilots {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 1rem;
+  }
+  .pilot {
+    border-left: 3px solid var(--sage);
+    padding: 0.2rem 0 0.2rem 1.25rem;
+  }
+  .pilot h3 {
+    margin-top: 0;
+    color: var(--forest);
+    font-family: Georgia, serif;
+    font-size: 1.3rem;
+  }
+  .pilot .one-liner {
+    font-style: italic;
+    color: var(--forest-soft);
+    margin-bottom: 0.8em;
+  }
+
+  /* CHART */
+  .chart-frame {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1.2rem 1rem 0.6rem;
+    margin: 1.5rem 0 1rem;
+  }
+  .chart-caption {
+    font-size: 0.92rem;
+    color: var(--forest-soft);
+    margin-top: 0.3rem;
+  }
+  #etChart { width: 100%; height: 460px; }
+
+  /* SCORECARD */
+  table.scorecard {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.2rem;
+    font-size: 0.95rem;
+  }
+  table.scorecard th, table.scorecard td {
+    text-align: left;
+    padding: 0.7rem 0.8rem;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  table.scorecard thead th {
+    background: var(--cream-warm);
+    font-family: Georgia, serif;
+    font-weight: 500;
+    color: var(--forest);
+    border-bottom: 2px solid var(--rule);
+  }
+  table.scorecard td:first-child { font-weight: 600; color: var(--forest); }
+  .pill {
+    display: inline-block;
+    padding: 0.12rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    background: var(--cream-warm);
+    color: var(--forest-soft);
+  }
+  .pill.warn { background: #f5e2d8; color: #8a3a1c; }
+  .pill.good { background: #e1ecdd; color: var(--sage-dark); }
+
+  /* FINDINGS LIST */
+  ul.findings {
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+  }
+  ul.findings li {
+    padding: 0.7rem 0 0.7rem 1.4rem;
+    border-bottom: 1px dotted var(--rule);
+    position: relative;
+  }
+  ul.findings li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--terracotta);
+    font-weight: 600;
+  }
+  ul.findings li:last-child { border-bottom: none; }
+
+  /* SMALL-FARM CALLOUT */
+  .callout {
+    background: var(--cream-warm);
+    border-left: 4px solid var(--terracotta);
+    border-radius: 6px;
+    padding: 1.5rem 1.7rem;
+    margin: 2rem 0 0.5rem;
+  }
+  .callout-tag {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.72rem;
+    color: var(--terracotta);
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+  .callout h3 {
+    margin: 0 0 0.8rem;
+    color: var(--forest);
+    font-size: 1.25rem;
+    font-family: Georgia, serif;
+  }
+  .callout-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.4rem;
+    margin: 0.6rem 0 1rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid rgba(176, 68, 68, 0.22);
+  }
+  .callout-stats > div { display: flex; flex-direction: column; }
+  .callout-stats .num {
+    font-family: Georgia, serif;
+    font-size: 1.75rem;
+    color: var(--terracotta);
+    line-height: 1;
+    margin-bottom: 0.2rem;
+  }
+  .callout-stats > div > span:last-child {
+    font-size: 0.9rem;
+    color: var(--forest-soft);
+    line-height: 1.35;
+  }
+  .callout p { margin: 0; font-size: 0.97rem; }
+  @media (max-width: 760px) {
+    .callout-stats { grid-template-columns: 1fr; gap: 0.7rem; }
+  }
+
+  /* WHATS NEXT */
+  .next-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 1.4rem;
+  }
+  .next {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1rem;
+  }
+  .next h3 {
+    margin: 0 0 0.4rem;
+    font-size: 0.92rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--sage-dark);
+  }
+  .next p { font-size: 0.92rem; margin: 0; color: var(--forest-soft); }
+  .next.this { border-top: 3px solid var(--terracotta); }
+
+  /* METHODS */
+  details.methods {
+    background: var(--cream-warm);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+  }
+  details.methods summary {
+    cursor: pointer;
+    font-family: Georgia, serif;
+    font-size: 1.15rem;
+    color: var(--forest);
+  }
+  details.methods[open] summary { margin-bottom: 0.7rem; }
+  details.methods ul { padding-left: 1.1rem; }
+  details.methods li { margin-bottom: 0.35rem; }
+
+  /* RESOURCES */
+  .resources {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem 2rem;
+    margin-top: 1rem;
+  }
+  .resources a {
+    display: block;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--rule);
+    color: var(--forest);
+    text-decoration: none;
+  }
+  .resources a:hover { color: var(--terracotta); }
+  .resources a span { display: block; font-size: 0.85rem; color: var(--forest-soft); margin-top: 0.15rem; }
+
+  footer {
+    padding: 2rem 0 3rem;
+    font-size: 0.85rem;
+    color: var(--forest-soft);
+    text-align: center;
+  }
+
+  /* MOBILE */
+  @media (max-width: 760px) {
+    .tiles { grid-template-columns: 1fr; }
+    .stakes-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+    .pilots { grid-template-columns: 1fr; }
+    .next-grid { grid-template-columns: 1fr 1fr; }
+    .resources { grid-template-columns: 1fr; }
+    section { padding: 2.5rem 0; }
+    .hero { padding: 3.5rem 0 2.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Vina Groundwater Sustainability Agencies · 2024–2026</div>
+    <h1>Two pilots. Two pathways. One goal.</h1>
+    <p class="lede">The Vina Subbasin must close a roughly 10,000 acre-foot per year groundwater deficit by 2042. Two pilot studies — one on extended orchard replacement, one on precision irrigation — measured how much of that gap agriculture can realistically contribute, and how to get there.</p>
+    <div class="tiles" aria-label="Headline results">
+      <div class="tile">
+        <div class="tile-tag">Pathway 1 — Extend Orchard Replacement</div>
+        <span class="num">0.91 – 2.62 AF/ac/yr</span>
+        <span class="label">Field-verified ET savings per acre, per year, from extending the orchard replant period — varies with the interim land use (cover crop, winter grain, sudan grass, idle, or short-season cash crop).</span>
+      </div>
+      <div class="tile">
+        <div class="tile-tag">Pathway 2 — Precision Irrigation</div>
+        <span class="num">~2,950 AF/yr</span>
+        <span class="label">Combined subbasin-scale potential from expanding pressure-chamber scheduling in walnuts (~1,950 AF) and shifting irrigation away from midday hours (~1,000 AF).</span>
+      </div>
+      <div class="tile goal">
+        <div class="tile-tag">The 2042 Goal</div>
+        <span class="num">10,000+ AF/yr</span>
+        <span class="label">Annual overdraft the Subbasin must close. Demand reduction is one piece — recharge, surface water, and partnerships complete the portfolio.</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- STAKES -->
+<section id="stakes">
+  <div class="wrap stakes-grid">
+    <div>
+      <h2>Why this matters</h2>
+      <p>The Vina Subbasin — roughly <strong>185,000 acres</strong> covering Chico, Nord, Durham, and the surrounding farms — relies on groundwater for <strong>89%</strong> of its water supply. Agricultural irrigation accounts for <strong>91%</strong> of that use, with almonds and walnuts the dominant crops.</p>
+      <p>Under California's <a href="https://water.ca.gov/programs/groundwater-management/sgma-groundwater-management" target="_blank" rel="noopener">Sustainable Groundwater Management Act</a>, the Subbasin must achieve balance by <strong>2042</strong>. The Vina Groundwater Sustainability Plan estimates the annual deficit at 10,000 acre-feet per year — and follow-on analysis suggests it could be twice that. No single project will close the gap. Demand reduction is one piece of a four-part strategy alongside recharge, surface water supplies, and partnerships.</p>
+    </div>
+    <aside class="stat-rail" aria-label="Subbasin at a glance">
+      <dl>
+        <dt>185,000 ac</dt><dd>Vina Subbasin area</dd>
+        <dt>110,000</dt><dd>residents</dd>
+        <dt>91%</dt><dd>of water use is agricultural</dd>
+        <dt>51,801 ac</dt><dd>standing almonds + walnuts in 2025</dd>
+        <dt>2042</dt><dd>SGMA sustainability deadline</dd>
+      </dl>
+    </aside>
+  </div>
+</section>
+
+<!-- WHAT WE TRIED -->
+<section id="pilots">
+  <div class="wrap">
+    <h2>What we tried</h2>
+    <p>Two pilot studies funded by the California Department of Water Resources Sustainable Management Grant program tested different ways agriculture could use less groundwater without abandoning productive farmland.</p>
+    <div class="pilots">
+      <div class="pilot">
+        <h3>Extend Orchard Replacement (EOR)</h3>
+        <p class="one-liner">Leave ground in low-water cover for an extra year between orchards.</p>
+        <p>When an orchard is removed, growers typically replant within a year. Extending that gap by one to two years — with cover crops, winter grains, or fallow — measurably reduces evapotranspiration over the orchard's full life cycle. The pilot engaged <strong>10 growers across 11 pilot fields</strong> (5 almond, 6 walnut) spanning soil texture and geography across the Subbasin, and quantified both the savings and the per-acre incentive payments that would be needed for voluntary participation.</p>
+      </div>
+      <div class="pilot">
+        <h3>Precision Irrigation (PI)</h3>
+        <p class="one-liner">Test whether sharper irrigation scheduling can cut consumptive use in almond and walnut orchards.</p>
+        <p>Land IQ measured per-field evapotranspiration across the whole Subbasin using satellite imagery calibrated by ground-based ET stations, then worked with growers on <strong>26 pilot orchards</strong> (11 almond, 15 walnut, ages 6–29) to compare yields and water use across irrigation methods, scheduling tools, and orchard ages.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT WE FOUND -->
+<section id="findings">
+  <div class="wrap">
+    <h2>What we found</h2>
+
+    <h3>Water use by land cover, January–October 2025</h3>
+    <p>Almond and walnut orchards consume <strong>3–4×</strong> as much water as the alternative land covers tested for the EOR pilot. Idle ground and winter cover crops use the least; summer cash crops like processing tomatoes use more but generate revenue.</p>
+
+    <div class="chart-frame">
+      <div id="etChart" role="img" aria-label="Bar chart of mean evapotranspiration by land cover, January through October 2025, Vina Subbasin"></div>
+      <p class="chart-caption">Source: Land IQ, March 2026. Mean ET in inches per acre, January–October 2025, modeled across the Vina Subbasin. Stacked segments separate ET during active crop growth from ET while the land was idle.</p>
+    </div>
+
+    <h3>EOR scorecard — what each alternative looks like</h3>
+    <table class="scorecard">
+      <thead>
+        <tr><th>Practice</th><th>Water use vs. orchard</th><th>Incentive needed</th><th>Co-benefits / risks</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Winter mixed cover crop</td>
+          <td>33–38% of orchard ET</td>
+          <td>up to $790/ac</td>
+          <td><span class="pill good">Soil health</span> <span class="pill good">Disease suppression</span> <span class="pill good">Reduced replant problem</span></td>
+        </tr>
+        <tr>
+          <td>Spring sudan grass</td>
+          <td>41–47% of orchard ET</td>
+          <td>practice-dependent</td>
+          <td><span class="pill good">Dries soil for fumigation</span> <span class="pill good">Hay revenue</span></td>
+        </tr>
+        <tr>
+          <td>Winter grain (harvested)</td>
+          <td>33–38% of orchard ET</td>
+          <td>lowest — harvest revenue offsets cost</td>
+          <td><span class="pill good">Forage / grain sale</span></td>
+        </tr>
+        <tr>
+          <td>Idle ground</td>
+          <td>24–27% of orchard ET</td>
+          <td>~$633/ac</td>
+          <td><span class="pill warn">Dust, erosion</span> <span class="pill warn">Soil degradation</span></td>
+        </tr>
+        <tr>
+          <td>Summer dry beans</td>
+          <td>60–69% of orchard ET</td>
+          <td>market-dependent</td>
+          <td><span class="pill good">Cash revenue</span> <span class="pill warn">Commodity-price sensitive</span></td>
+        </tr>
+        <tr>
+          <td>Summer processing tomato</td>
+          <td>74–84% of orchard ET</td>
+          <td>market-dependent</td>
+          <td><span class="pill good">Cash revenue</span> <span class="pill warn">Commodity-price sensitive</span></td>
+        </tr>
+        <tr>
+          <td>Abandoned orchard</td>
+          <td>39–45% of orchard ET</td>
+          <td>n/a — discouraged</td>
+          <td><span class="pill warn">Pest harbor</span> <span class="pill warn">AB 732 fines up to $1,000/ac</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Precision Irrigation — five things the pilot revealed</h3>
+    <ul class="findings">
+      <li>Medium and large almond and walnut operations in the Subbasin are <strong>already irrigating efficiently</strong>. About 75% of pilot growers use two or more scientific data sources (ET, soil moisture, plant water status) to schedule irrigation, and applied water averages only 68% of crop ET in almonds and 72% in walnuts — growers are leveraging stored soil moisture and in-season rainfall to meet a meaningful share of crop demand.</li>
+      <li>Walnut growers using <strong>pressure chambers</strong> to time irrigation applied roughly <strong>22% less water while producing about 9% more dry in-shell yield</strong>. Expanding adoption by 3,000 acres (an additional ~20% of established walnut acreage) would yield approximately <strong>1,950 AF/yr</strong> of reduced groundwater pumping.</li>
+      <li><strong>Irrigation system management</strong> matters more than irrigation type. Solid set, dual-line drip, and micro sprinkler all performed comparably when well-managed.</li>
+      <li>Shifting irrigation to <strong>nighttime hours</strong> is estimated to reduce evaporative ET by roughly <strong>0.35 ac-ft per acre</strong> (~350 AF per 1,000 acres of participation), and pairs naturally with PG&amp;E off-peak rate structures that save growers about <strong>$65–$70/ac/yr</strong> in pumping energy costs. Practical barriers — labor, automation, and re-entry windows — would need to be addressed at scale. (Literature-based; needs local validation.)</li>
+      <li><strong>Small farms (under 100 acres)</strong> represent roughly 85% of farming entities in the Subbasin but only 27% of orchard acreage, and were under-represented in the pilot. Larger operations show limited remaining room for ETc reduction; small-farm potential is the open question.</li>
+    </ul>
+
+    <aside class="callout" aria-label="Small-farm opportunity">
+      <div class="callout-tag">The Open Frontier</div>
+      <h3>Small farms — the underinvestigated demand-reduction opportunity</h3>
+      <div class="callout-stats">
+        <div><span class="num">~14,000 ac</span><span>of almond and walnut orchard ground on farms under 100 acres</span></div>
+        <div><span class="num">~85%</span><span>of all farming entities in the Vina Subbasin</span></div>
+      </div>
+      <p>The pilot focused on medium and large farms where data access was feasible within the grant period — and found that those operations are already irrigating efficiently. Small farms adopt advanced scheduling tools (pressure chambers, soil-moisture sensors, ET-based scheduling) less consistently. Quantifying what these ~14,000 acres could contribute to the Subbasin's 10,000 AF/yr target — likely through a partnership model that pairs growers with irrigation consultants — is the most important open question identified by the pilot, and a priority candidate for follow-on funding.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- WHAT'S NEXT -->
+<section id="next">
+  <div class="wrap">
+    <h2>Where this fits</h2>
+    <p>The pilots are one of four strategies the Vina and Rock Creek Reclamation District GSAs are advancing with their partners. Demand reduction alone will not close the Subbasin's deficit; the strategies work together.</p>
+    <div class="next-grid">
+      <div class="next this">
+        <h3>Demand reduction</h3>
+        <p>This work. EOR program design and continued investigation of PI on small farms and nighttime irrigation.</p>
+      </div>
+      <div class="next">
+        <h3>Groundwater recharge</h3>
+        <p>Butte County Recharge Action Plan targets at least 20,000 AF/yr. Feasibility studies — including for Lindo Channel — are underway.</p>
+      </div>
+      <div class="next">
+        <h3>Surface water supplies</h3>
+        <p>Feasibility analysis evaluating conjunctive-use options to offset groundwater pumping on farms with no current surface supply.</p>
+      </div>
+      <div class="next">
+        <h3>Planning &amp; partnerships</h3>
+        <p>Interbasin coordination with neighboring districts, state and federal agencies, and local partners.</p>
+      </div>
+    </div>
+    <p style="margin-top:1.6rem;"><strong>These findings are program-ready.</strong> The component originally included direct grower incentive payments; when DWR determined in November 2024 that such payments were not eligible under the SGM Grant Program, the GSA redesigned the work as a voluntary case-study program — preserving the technical objectives and reallocating $1.195 million to enhanced monitoring and surface-water/recharge feasibility. The validated practice menu, water-savings calculator, and economic analysis produced here can be deployed quickly when funding sources permitting direct landowner incentives become available (Proposition 4, federal WaterSMART, or equivalent).</p>
+  </div>
+</section>
+
+<!-- METHODS -->
+<section id="methods">
+  <div class="wrap">
+    <details class="methods">
+      <summary>How we know this — methods, accuracy, and caveats</summary>
+      <p>Both studies were conducted by <a href="https://landiq.com" target="_blank" rel="noopener">Land IQ</a> for the Vina Subbasin GSAs under the DWR Sustainable Management Grant program, with the EOR economic analysis prepared by <a href="https://eraecon.com" target="_blank" rel="noopener">ERA Economics</a>. A Local Expert Group of subject-matter experts — including UC Cooperative Extension advisors and irrigation specialists Allan Fulton, Joe Connell, Joel Kimmelshue, and Tom Devol — guided pilot orchard selection, grower recruitment, and findings review. Work was completed March 2026.</p>
+      <ul>
+        <li><strong>Spatial data foundation.</strong> Field-by-field crop type, age, density, condition, soil texture (SSURGO), and modeled ET compiled across every irrigated field in the 184,917-acre Subbasin, with a 2025 inventory of 51,801 standing acres of almonds and walnuts.</li>
+        <li><strong>ET measurement.</strong> Four orchard ET field stations plus a short-season-crop station installed fall 2024; meteorological data combined with Landsat 8, Sentinel-2, and Planet satellite imagery in a surface energy balance model. Independent validation showed <strong>R² = 0.95</strong> and mean absolute monthly error of 0.48 inches.</li>
+        <li><strong>EOR sample.</strong> 10 growers, 11 pilot fields (5 almond, 6 walnut), selected to span ownership size, geographic distribution, soil texture, and the full range of interim fallow practices observed in the Subbasin. Economic analysis (ERA Economics) covered six representative land-management scenarios.</li>
+        <li><strong>PI sample.</strong> 26 orchards (11 almond ages 6–20, 15 walnut ages 8–29) covering double-line drip, solid set, and micro sprinkler. Yield data obtained for all 26; applied-water data for 21.</li>
+        <li><strong>Caveats.</strong> PI conclusions are most defensible for medium and large operations; small-farm coverage was limited. Reliably identifying non-beneficial ET at the field scale would require <strong>at least four years</strong> of paired yield and ET data — only one to two years are available so far. The nighttime-irrigation savings estimate is literature-based and needs local validation. EOR savings depend strongly on which alternative land use is adopted and on commodity-market conditions; per-acre incentives and scenario budgets should be refreshed annually.</li>
+        <li><strong>Program redesign.</strong> The original component included direct grower incentive payments. After DWR's November 2024 determination that such payments were not eligible under SGM Grant rules, the Vina GSA pivoted to a voluntary case-study model and reallocated $1.195 million to enhanced monitoring (Component 2) and surface-water/recharge feasibility (Component 5).</li>
+      </ul>
+      <p>Full methodology, data, the EOR Water Savings Calculator, seven EOR case studies, and four PI technical bulletins are documented in the Extend Orchard Replacement and Precision Irrigation Final Reports (Land IQ, March 2026).</p>
+    </details>
+  </div>
+</section>
+
+<!-- RESOURCES -->
+<section id="resources">
+  <div class="wrap">
+    <h2>Go deeper</h2>
+    <div class="resources">
+      <a href="https://storymaps.arcgis.com/stories/bf68b5bc20ed4052b0f088709644054c" target="_blank" rel="noopener">
+        Vina Subbasin Demand Reduction Strategies — Story Map
+        <span>Full visual walkthrough by Land IQ, including maps, charts, and case studies.</span>
+      </a>
+      <a href="https://www.vinagsa.org/demand-reduction-strategies-project-1ee0dc3" target="_blank" rel="noopener">
+        Vina GSA project page
+        <span>Final reports, webinar recordings, contracts, and the public comment form.</span>
+      </a>
+      <a href="https://www.vinagsa.org" target="_blank" rel="noopener">
+        Vina GSA home
+        <span>Board meetings, the Groundwater Sustainability Plan, and program updates.</span>
+      </a>
+      <a href="https://www.vinagsa.org/demand-reduction-strategies-project-1ee0dc3" target="_blank" rel="noopener">
+        Share feedback
+        <span>Comment on the pilot findings or sign up for program-development updates.</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Prepared for the Vina and Rock Creek Reclamation District Groundwater Sustainability Agencies · Pilot studies by Land IQ, March 2026 · Funded by the California Department of Water Resources Sustainable Management Grant Program
+  </div>
+</footer>
+
+<script>
+  // Mean ET by Crop Type (Jan–Oct 2025), Vina Subbasin.
+  // Source: Land IQ storymap, "Mean ET by Crop Type January–October" chart.
+  // Values are inches per acre. Crop ET = ET during active crop growth.
+  // Idle ET = ET during months the same parcel was idle (cumulative shoulder/winter contribution).
+  document.addEventListener("DOMContentLoaded", function () {
+    if (typeof Plotly === "undefined") {
+      // Plotly loads via defer; retry once it's ready.
+      var t = setInterval(function () {
+        if (typeof Plotly !== "undefined") { clearInterval(t); render(); }
+      }, 60);
+    } else {
+      render();
+    }
+
+    function render() {
+      var crops   = ["Walnuts", "Almonds", "Processing\nTomatoes", "Dry Beans", "Sudan\nCover Crop", "Abandoned\norchard", "Winter\nCover Crop", "Winter\nGrains", "Idle ground"];
+      var cropET  = [41.3, 36.3, 21.8, 16.3, 14.2, 16.3, 11.9, 11.9, 0];
+      var idleET  = [   0,    0,  8.5,  8.6,  2.9,    0,  1.9,  1.9, 9.9];
+      var total   = cropET.map(function (v, i) { return +(v + idleET[i]).toFixed(1); });
+
+      var traceCrop = {
+        x: crops, y: cropET, name: "Active crop ET", type: "bar",
+        marker: { color: "#688e6c", line: { color: "#4f7053", width: 1 } },
+        hovertemplate: "<b>%{x}</b><br>Active crop ET: %{y} in/ac<extra></extra>"
+      };
+      var traceIdle = {
+        x: crops, y: idleET, name: "Idle-period ET", type: "bar",
+        marker: { color: "#b07a4f", line: { color: "#8a5d3a", width: 1 } },
+        hovertemplate: "<b>%{x}</b><br>Idle-period ET: %{y} in/ac<extra></extra>"
+      };
+      var totalLabels = total.map(function (v) { return v.toString(); });
+
+      var layout = {
+        barmode: "stack",
+        margin: { l: 56, r: 16, t: 18, b: 80 },
+        font: { family: "-apple-system, Segoe UI, Roboto, sans-serif", size: 13, color: "#2d3e2d" },
+        paper_bgcolor: "#ffffff",
+        plot_bgcolor: "#ffffff",
+        xaxis: { tickangle: 0, automargin: true, fixedrange: true },
+        yaxis: { title: { text: "Total ET, inches per acre", standoff: 12 }, gridcolor: "#eee5d4", fixedrange: true, rangemode: "tozero" },
+        legend: { orientation: "h", x: 0, y: 1.12, xanchor: "left" },
+        annotations: total.map(function (v, i) {
+          return { x: crops[i], y: v + 1.3, text: v.toString(), showarrow: false, font: { size: 12, color: "#4a5c4a" } };
+        })
+      };
+
+      var config = { displayModeBar: false, responsive: true };
+      Plotly.newPlot("etChart", [traceCrop, traceIdle], layout, config);
+    }
+  });
+</script>
+</body>
+</html>

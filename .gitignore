@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Claude Code project settings
+.claude/
+
+# Internal work products — kept local, not for public publication
+DRS_Completion_Report_v9.md
+Vina Subbasin Demand Reduction Strategies.pdf
